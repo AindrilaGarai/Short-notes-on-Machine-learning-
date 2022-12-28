@@ -1,0 +1,79 @@
+---
+title: "Model Inference"
+author: "by AINDRILA GARAI"
+date: "MSC STATISTICS, IIT KANPUR aindrilag22@iitk.ac.in"
+output: word_document
+---
+
+### **Introduction:**
+Here we provide a general exposition of the maximum likelihood approach and Bayesian method for inference.
+
+#### **A Smoothing Example:**
+
+We illustrate the bootstrap in a simple one-dimensional smoothing problem, and show its connection to maximum likelihood. Denote the training data by $Z = {z_1,z_2,... ,z_N }$, with $z_i = (x_i , y_i)$, $i = 1, 2,... ,N$. So, 
+$$\mu(x)=\sum_{j=1}^7 \beta_j h_j(x) .$$
+This is a seven-dimensional linear space of functions and $\hat{\beta}=\left(\mathbf{H}^T \mathbf{H}\right)^{-1} \mathbf{H}^T \mathbf{y}$  obtained by minimizing the squared error over the training set. The corresponding fit is $\hat{\mu}(x)=\sum_{j=1}^7 \hat{\beta}_j h_j(x)$.
+
+If we simulate new responses by adding Gaussian noise to the predicted values: $\hat{\mu}^*(x) \sim N\left(\hat{\mu}(x), h(x)^T\left(\mathbf{H}^T \mathbf{H}\right)^{-1} h(x) \hat{\sigma}^2\right)$.
+
+Now if we use maximum likelihood approach and Z has a normal distribution with mean $\mu$ and variance $\sigma^2$ ,then $\hat{\beta}=\left(\mathbf{H}^T \mathbf{H}\right)^{-1} \mathbf{H}^T \mathbf{y}$ which agrees with the least squares estimate.
+
+### **Bayesian Methods:**
+
+In the Bayesian approach to inference we specify a sampling model $Pr(Z|θ)$ and a prior distribution for the parameters $Pr(θ)$, the posterior distribution $$\operatorname{Pr}(\theta \mid \mathbf{Z})=\frac{\operatorname{Pr}(\mathbf{Z} \mid \theta) \cdot \operatorname{Pr}(\theta)}{\int \operatorname{Pr}(\mathbf{Z} \mid \theta) \cdot \operatorname{Pr}(\theta) d \theta}$$
+which represents our updated knowledge about $θ$. The function $\mu(x)$ should be smooth, and have guaranteed this by expressing $\mu$ in a smooth low-dimensional basis of $B$splines.
+
+### **Relationship Between the Bootstrap and Bayesian Inference:**
+
+Let $z \sim N(\theta, 1)$ and $\theta \mid z \sim N\left(\frac{z}{1+1 / \tau}, \frac{1}{1+1 / \tau}\right)$. Now the larger we take $\tau$, the more concentrated the posterior becomes
+around the maximum likelihood estimate $\hat{\theta}=z$. his is the same as a parametric bootstrap distribution in which we generate bootstrap values $z^*$ from the maximum likelihood estimate of the sampling density $N(z, 1)$
+
+### **The EM Algorithm:**
+
+The EM algorithm is a popular tool for simplifying difficult maximum likelihood problems.
+
+1. Take initial guesses for the parameters $\hat{\mu}_1, \hat{\sigma}_1^2, \hat{\mu}_2, \hat{\sigma}_2^2, \hat{\pi}$.
+
+2. Expectation Step: compute the responsibilities $\hat{\gamma}_i=\dfrac{\hat{\pi} \phi_{\hat{\theta}_2}\left(y_i\right)}{(1-\hat{\pi}) \phi_{\hat{\theta}_1}\left(y_i\right)+\hat{\pi} \phi_{\hat{\theta}_2}\left(y_i\right)}, i=1,2, \ldots, N$
+
+3. Maximization Step: compute the weighted means and variances:
+$\begin{array}{rc}\hat{\mu}_1=\dfrac{\sum_{i=1}^N\left(1-\hat{\gamma}_i\right) y_i}{\sum_{i=1}^N\left(1-\hat{\gamma}_i\right)}, & \hat{\sigma}_1^2=\dfrac{\sum_{i=1}^N\left(1-\hat{\gamma}_i\right)\left(y_i-\hat{\mu}_1\right)^2}{\sum_{i=1}^N\left(1-\hat{\gamma}_i\right)}, \\ \hat{\mu}_2=\dfrac{\sum_{i-1}^N \hat{\gamma}_i y_i}{\sum_{i=1}^N \dot{\gamma}_i}, & \hat{\sigma}_2^2=\dfrac{\sum_{i=1}^N \hat{\gamma}_i\left(y_i-\hat{\mu}_2\right)^2}{\sum_{i=1}^N \hat{\gamma}_i},\end{array}$
+and the mixing probability $\hat{\pi}=\sum_{i=1}^N \hat{\gamma}_i / N$
+
+4. Iterate steps 2 and 3 until convergence.
+
+#### **MCMC for Sampling from the Posterior:**
+
+One would like to draw samples from the resulting posterior distribution, in order to make inferences about the parameter. **Gibbs sampling** is an MCMC procedure.
+
+1. Take some initial values $\theta^{(0)}=\left(\mu_1^{(0)}, \mu_2^{(0)}\right)$.
+2. Repeat for $t = 1, 2,... ,.$ 
+   (a) For i = 1, 2,... ,N generate $\Delta_i^{(t)} \in\{0,1\}$ with $\operatorname{Pr}\left(\Delta_i^{(t)}=1\right)= \hat{\gamma}_i\left(\theta^{(t)}\right)$
+   (b) Set $\hat{\mu}_1=\frac{\sum_{i=1}^N\left(1-\Delta_i^{(t)}\right) \cdot y_i}{\sum_{i=1}^N\left(1-\Delta_i^{(t)}\right)}$ and $\hat{\mu}_2=\frac{\sum_{i=1}^N \Delta_i^{(t)} \cdot y_i}{\sum_{i=1}^N \Delta_i^{(t)}}$ and generate $\mu_1^{(t)} \sim N\left(\hat{\mu}_1, \hat{\sigma}_1^2\right)$ and $\mu_2^{(t)} \sim N\left(\hat{\mu}_2, \hat{\sigma}_2^2\right)$
+3. Continue step 2 until the joint distribution of $\left(\boldsymbol{\Delta}^{(t)}, \mu_1^{(t)}, \mu_2^{(t)}\right)$ doesn’t change.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
