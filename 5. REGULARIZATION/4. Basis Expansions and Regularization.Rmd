@@ -1,0 +1,103 @@
+---
+title: "Basis Expansions and Regularization"
+author: "by AINDRILA GARAI"
+date: "MSC STATISTICS, IIT KANPUR aindrilag22@iitk.ac.in"
+output: word_document
+---
+
+### **Introduction:**
+
+The true function $f(X)$ is not always linear in $X$. So, we replace the inputs $X$ with additional variables, which are transformations of $X$ and then use linear models based on these derived input features.
+
+Denote by $h_m(X): \mathbb{R}^p \mapsto \mathbb{R}$ the $m$th transformation of $X$, $m = 1,... ,M$. Then,
+$$f(X)=\sum_{m=1}^M \beta_m h_m(X)$$
+a linear basis expansion in $X$.
+
+$h_m(x)$ can be (i) $X_m, m = 1, \cdots, p$ (original linear model)
+(ii) $h_m(X)=X_j^2 \text { or } h_m(X)=X_j X_k$ (polynomial terms to achieve higher-order Taylor expansions)
+(iii) $h_m(X)=\log \left(X_j\right), \sqrt{X_j}, \ldots$
+(iv) $h_m(X)=I\left(L_m \leq X_k<U_m\right)$ (a piecewise constant contribution for $X_k$).
+
+### **Dictionary:**
+
+Modeling signals and images produce a dictionary $D$ consisting of a very large number $|D|$ of basis functions. Along with this a method for controlling the complexity of our model is required, using basis functions from the dictionary. 3 approaches are -
+
+(i) **Restriction methods** where we decide before-hand to limit the class of functions $f(X) = \sum_{j=1}^p \sum_{m=1}^{M_j} \beta_{j m} h_{j m}\left(X_j\right) $ 
+
+(ii) **Selection methods** which adaptively scan the dictionary and include only those basis functions $h_m$ that contribute significantly to the fit of the model such as Boosting.
+
+(iii) **Regularization methods** where we use the entire dictionary but restrict the coefficients such as Ridge regression.
+
+### **Piecewise Polynomials and Splines:** 
+
+Assume that X is one-dimensional. A piecewise polynomial function $f(X)$ is obtained by dividing the domain of $X$ into contiguous intervals, and representing f by a separate polynomial in each interval.
+We would typically prefer which is also piecewise linear but restricted to be continuous at the two knots.
+
+- When the function is continuous and has continuous first and second derivatives at the knots is known as a cubic spline. More generally, an order-$M$ spline with knots $\epsilon_j$ , $j = 1,... ,K$ is a piecewise-polynomial of order $M$ and has continuous derivatives up to order $M − 2$. The general form for the truncated-power basis set would be
+
+$$\begin{aligned}
+h_j(X) & =X^{j-1}, j=1, \ldots, M \\
+h_{M+\ell}(X) & =\left(X-\xi_{\ell}\right)_{+}^{M-1}, \ell=1, \ldots, K
+\end{aligned}$$
+
+These fixed-knot splines are also known as regression splines.
+
+### **Natural Cubic Splines:**
+
+A natural cubic spline adds additional constraints, namely that the function is linear beyond the boundary knots. A natural cubic spline with K knots is represented by K basis functions.
+
+$$N_1(X)=1, \quad N_2(X)=X, \quad N_{k+2}(X)=d_k(X)-d_{K-1}(X)$$
+where 
+$$d_k(X)=\frac{\left(X-\xi_k\right)_{+}^3-\left(X-\xi_K\right)_{+}^3}{\xi_K-\xi_k}$$
+Each of these basis functions can be seen to have zero second and third derivative for $X \geq \xi_K$.
+
+### **Filtering and Feature Extraction:**
+
+The preprocessing need not be linear but can be a general (nonlinear) function of the form $x^*= g(x)$. The derived features $x^*$ can be used as inputs into any (linear or nonlinear) learning procedure. For signal or image recognition a approach is to first transform the raw features via a wavelet transform and then use the features as inputs into a neural network.
+
+### **Smoothing Splines:**
+
+A spline basis method that avoids the knot selection problem completely by using a maximal set of knots. The complexity of the fit is controlled by regularization. The fitted smoothing spline is given by 
+$$\hat{f}(x)=\sum_{j=1}^N N_j(x) \hat{\theta}_j$$
+
+where the $N_j (x)$ are an $N$-dimensional set of basis functions for representing this family natural splines.
+- The degrees of freedom of a smoothing spline is $\mathrm{df}_\lambda=\operatorname{trace}\left(\mathbf{S}_\lambda\right)$ where $\mathbf{S}_\lambda$ is smoother matrix.
+- Bias will decrease and variance will increse if we increase the degrees of freedom. 
+ 
+**Best Subset Selection:**
+```{r}
+library (ISLR2)
+sum (is.na(Hitters$Salary)) # to identify the missing observations
+library (leaps)
+regfit.full <- regsubsets (Salary ~ ., Hitters)
+summary (regfit.full)
+regfit.full <- regsubsets (Salary ~ ., data = Hitters , nvmax = 19)
+reg.summary <- summary (regfit.full)
+reg.summary
+plot (reg.summary$rss , xlab = " Number of Variables ", ylab = " RSS ", type = "l")
+plot (reg.summary$adjr2 , xlab = " Number of Variables ", ylab = " Adjusted RSq ", type = "l")
+points (11, reg.summary$adjr2[11], col = " red ", cex = 2, pch = 20)
+plot (reg.summary$cp, xlab = " Number of Variables ", ylab = "Cp", type = "l")
+plot (regfit.full , scale = "adjr2") # You can use r2, adjr2, Cp, bic
+coef (regfit.full , 6)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
