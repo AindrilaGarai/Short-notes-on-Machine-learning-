@@ -1,0 +1,144 @@
+---
+title: "Survival Analysis and Censored Data"
+author: "by AINDRILA GARAI"
+date: "MSC STATISTICS, IIT KANPUR aindrilag22@iitk.ac.in"
+output: word_document
+---
+
+### **Survival and Censoring Times:**
+
+The **survival time**($T$) represents the time at which the event of interest occurs- for instance, the time at which the patient dies or the customer cancels his or her subscription.
+
+The **censoring time**($C$) is the time at which censoring occurs- for example, the time at which the patient drops out of the study or the study ends.
+
+We do work with $Y =  \text{min(T,C)}$ and an indicator variable
+$$\delta= \begin{cases}1 & \text { if } T \leq C & \text{(left-censoring)}\\ 0 & \text { if } T>C& \text{(right-censoring)}\end{cases} $$
+- Suppose an example, An analysis that does not take into consideration the reason why the patients dropped out will likely overestimate the true average survival time.
+- Similarly, suppose that males who are very sick are more likely to drop out of the study than females who are very sick. Then a comparison of male and female survival times may wrongly suggest that males survive longer than females.
+
+### In general, let us assume the event time T is independent of the censoring time C but it is difficult to determine from the data.
+### We focus more on right-censoring.
+
+### **The Kaplan-Meier Survival Curve:**
+
+The survival curve or survival function is defined as- $S(t)=\operatorname{Pr}(T>t)$ (decreasing function) which quantifies the probability of surviving past time t.
+
+Eg. Suppose that a company is interested in modeling customer churn. Let $T$ represent the time that a customer cancels a subscription to the company’s service. Then $S(t)$ represents the probability that a customer cancels later than time $t$. **The larger the value of $S(t)$, the less likely that
+the customer will cancel before time $t$**.
+
+- $S(t)$ is complicated by the presence of censoring. So, we let $d_1 < d_2 < ··· < d_K$ denote the $K$ unique death times among the noncensored patients, and we let $q_k$ denote the number of patients who died at time $d_k$. For $k = 1,...,K$, we let $r_k$ denote the number of patients alive and in the study just before $d_k$; these are the at risk patients referred to as the risk set. By calculation we get,
+$$S\left(d_k\right)=\operatorname{Pr}\left(T>d_k \mid T>d_{k-1}\right) \times \cdots \times \operatorname{Pr}\left(T>d_2 \mid T>d_1\right) \operatorname{Pr}\left(T>d_1\right)$$
+
+- The Kaplan-Meier estimator of the survival curve is 
+$$\widehat{\operatorname{Pr}}\left(T>d_j \mid T>d_{j-1}\right)=\left(r_j-q_j\right) / r_j$$
+and then $$\widehat{S}\left(d_k\right)=\prod_{j=1}^k\left(\frac{r_j-q_j}{r_j}\right)$$
+
+- For times $t$ between $d_k$ and $d_{k+1}$, we set $\hat{S}(t)$ = $\hat{S}(d_k)$.
+- The Kaplan-Meier survival curve has a step-like shape.
+
+### **The Log-Rank Test:**
+
+To compute the log-rank test statistic, we calculate-
+$$W=\frac{\sum_{k=1}^K\left(q_{1 k}-\mathrm{E}\left(q_{1 k}\right)\right)}{\sqrt{\sum_{k=1}^K \operatorname{Var}\left(q_{1 k}\right)}}=\dfrac{\sum_{k=1}^K\left(q_{1 k}-\dfrac{q_k}{r_k} r_{1 k}\right)}{\sqrt{\sum_{k=1}^K \dfrac{q_k\left(r_{1 k} / r_k\right)\left(1-r_{1 k} / r_k\right)\left(r_k-q_k\right)}{r_k-1}}} .$$
+where $q_{1k}$ is number of patients of group 1 who died and $r_{1k}$ is the risk set of group 1.
+
+- When the sample size is large, the log-rank test statistic $W$ has approximately a standard normal distribution.
+- Computing $p$- value we can colclude our decision.
+
+### **Regression Models With a Survival Response:**
+
+- The hazard function( rate of death ) or hazard rate also known as the force of mortality is formally defined as- 
+$$h(t)=\lim _{\Delta t \rightarrow 0} \frac{\operatorname{Pr}(t<T \leq t+\Delta t \mid T>t)}{\Delta t}$$
+where T is the (unobserved) survival time.
+
+- The relationship between the hazard function $h(t)$ the survival function $S(t)$ is $$h(t) =\dfrac{f(t)}{S(t)}$$ where $f(t)=\lim _{\Delta t \rightarrow 0} \frac{\operatorname{Pr}(t<T \leq t+\Delta t)}{\Delta t}$ and $S(t)=\operatorname{Pr}(T>t)$. 
+
+- The likelihood associated with the ith observation is
+$$\begin{aligned}
+L_i= & \begin{cases}f\left(y_i\right) & \text { if the } i \text { th observation is not censored } \\
+S\left(y_i\right) & \text { if the } i \text { th observation is censored }\end{cases} \\
+& =f\left(y_i\right)^{\delta_i} S\left(y_i\right)^{1-\delta_i}
+\end{aligned}$$
+Assuming $f(t)$ is exponential or Gamma or Weibell distribution, we can find the pararmeter by MLE.
+
+- One possible approach is to assume a functional form for the hazard function $h(t|xi)$, such as
+$h\left(t \mid x_i\right)=\exp \left(\beta_0+\sum_{j=1}^p \beta_j x_{i j}\right)$ where the exponent
+function guarantees that the hazard function is non-negative. We then calculate $S(t|xi)$ and the parameter by MLE.
+
+### **Proportional Hazards:**
+
+The proportional hazards assumption states that
+$$h\left(t \mid x_i\right)=h_0(t) \exp \left(\sum_{j=1}^p x_{i j} \beta_j\right)$$
+where $h_0(t) ≥ 0$ is an unspecified function, known as the baseline hazard. The exponential term is called relative risk for the feature vector $x_i=\left(x_{i 1}, \ldots, x_{i p}\right)^T$.
+
+**Baseline hazard function:**
+
+We make no assumptions about its functional form. The hazard function is very flexible and can model a wide range of relationships between the covariates and survival time. Our only assumption is that a one-unit increase in $x_{ij}$ corresponds to an increase in $h(t|xi)$ by a factor of exp($\beta_j$ ).
+
+**Cox’s Proportional Hazards Model:**
+
+The magic of Cox’s proportional hazards model lies in the fact that it is in fact possible to estimate $\beta$ without having to specify the form of $h_0(t)$.
+
+the total hazard at time yi for the at risk observations is $$\sum_{i^{\prime}: y_{i^{\prime}} \geq y_i} h_0\left(y_i\right) \exp \left(\sum_{j=1}^p x_{i^{\prime} j} \beta_j\right)$$
+
+The partial likelihood is simply the product of these probabilities over all of the uncensored observations- 
+$$P L(\beta)=\prod_{i: \delta_i=1} \frac{h_0(y_i)\exp \left(\sum_{j=1}^p x_{i j} \beta_j\right)}{\sum_{i^{\prime}: y_{i^{\prime}} \geq y_i} h_0(y_i) \exp \left(\sum_{j=1}^p x_{i^{\prime} j} \beta_j\right)}$$
+### **Remark:**
+
+- In the case of a single binary covariate Cox’s proportional hazards model is exactly equal to the log-rank test.
+
+- An intercept can be absorbed into the baseline hazard $h_0(t)$.
+ 
+- We have assumed that there are no tied failure times. In the case of ties, the exact form of the partial likelihood is a bit more complicated and a number of computational approximations must be used.
+
+- We can estimate the survival curve $S(t|x)$ for an individual with feature vector $x$ by estimating the baseline hazard $h_0(t)$.
+
+
+### **Shrinkage for the Cox Model:**
+
+Here, we consider minimizing a penalized version of the negative log partial likelihood
+$$-\log \left(\prod_{i: \delta_i=1} \frac{\exp \left(\sum_{j=1}^p x_{i j} \beta_j\right)}{\sum_{i^{\prime}: y_{i^{\prime}} \geq y_i} \exp \left(\sum_{j=1}^p x_{i^{\prime} j} \beta_j\right)}\right)+\lambda P(\beta)$$
+wrt $\beta=\left(\beta_1, \ldots, \beta_p\right)^T$ where $P(\beta)=\sum_{j=1}^p \beta_j^2$ or $P(\beta)=\sum_{j=1}^p\left|\beta_j\right|$
+
+i)  when $\lambda > 0$, then minimizing thr above eq. yields a shrunken version of the coefficient estimates.
+
+ii) For a sufficiently large value of λ, using a lasso penalty will give some coefficients that are exactly equal to zero.
+
+- To assess the model fit which involves stratifying the observations using the coefficient estimates. In particular, for each test observation, we compute the “risk” score We then use these risk scores to categorize the observations based on their “risk”.
+
+Now try to plot:
+```{r}
+library (ISLR2)
+attach (BrainCancer)
+table (sex)
+table (diagnosis)
+table (status)
+
+library (survival)
+fit.surv <- survfit ( Surv (time, status) ~ 1) 
+plot (fit.surv , xlab = " Months ", ylab = " Estimated Probability of Survival ") # Kaplan-Meier survival curve
+fit.sex <- survfit ( Surv (time, status) ~ sex)
+plot (fit.sex , xlab = " Months ", ylab = " Estimated Probability of Survival ", col = c(2,4))
+legend ("bottomleft", levels (sex), col = c(2,4), lty = 1)
+
+logrank.test <- survdiff ( Surv (time, status) ~ sex) #  log-rank test
+logrank.test
+fit.cox <- coxph ( Surv (time, status) ~ sex)
+summary (fit.cox)
+
+```
+**Some work on Publication Data:**
+```{r}
+fit.posres <- survfit ( Surv (time, status) ~ posres , data = Publication )
+plot (fit.posres , xlab = " Months ", ylab = " Probability of Not Being Published ", col = 3:4)
+legend ("topright", c(" Negative Result ", " Positive Result ") ,
+col = 3:4, lty = 1)
+fit.pub <- coxph ( Surv (time, status) ~ posres , data = Publication)
+fit.pub
+logrank.test <- survdiff ( Surv (time, status) ~ posres , data = Publication)
+logrank.test
+fit.pub2 <- coxph ( Surv (time, status) ~ . - mech , data = Publication)
+fit.pub2
+```
+
+
