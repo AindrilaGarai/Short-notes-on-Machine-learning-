@@ -1,0 +1,244 @@
+---
+title: "Linear Regression"
+author: "by AINDRILA GARAI"
+date: "MSC STATISTICS, IIT KANPUR aindrilag22@iitk.ac.in"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### **INTRODUCTION:** 
+
+Linear Regression is a very simple approach for supervised learning. In particular, it is a useful and widely used tool for predicting a quantitative response.The least squares method that is most commonly used to fit this model. To know **the relationships between the predictor and the variable, the strength of this relationship( if exists ), a way to separate out the individual contributors and their strength, accuracy of this prediction for future, linearity of the relationships & synergy or interaction effect**(nonlinear cumulative effects of two active variables with similar output of their different activities).
+
+### **Linear Regression:**
+
+$Y = \beta_0+\beta_1 X+ \epsilon$ is the linear relationship for predicting a quantitative response Y on the basis of a single predictor variable X.$\beta_0$ and$\beta_1$, two unknown constants 
+are the intercept and slope terms(coefficients or parameters) in the linear model respectively. Our next task is to compute $\hat{\beta_0}$ and $\hat{\beta_1}$ by computing $\hat{y}=\hat{\beta}_0+\hat{\beta}_1 x$ on the basis of training data.
+
+Let $\hat{y}=\hat{\beta}_0+\hat{\beta}_1 x$ be the prediction for Y based on the ith value of X. Then $e_i= y_i-\hat{y_i}$ represents the ith residual—this is the difference between the ith observed response value and the ith response value that is predicted by our linear model. We define the residual sum of squares (RSS) as $$RSS = e_1^2+e_2^2+\cdots+e_n^2$$
+The least squares approach chooses $\hat{\beta_0}$ and $\hat{\beta_1}$  to minimize the RSS.
+$$\hat{\beta_1}=\dfrac{\sum\limits_{k=1}^n (x_i-\bar{x})(y_i-\bar{y})}{\sum\limits_{k=1}^n{(x_i-\bar{x})^2}}$$
+$$\hat{\beta_0}=\bar{y}-\hat{\beta_1}\bar{x}$$
+where $\bar{y}$ and $\bar{x}$ are the sample means.
+
+### **NOTES**:
+
+- In general **the sample mean will provide a good estimate of the population mean**. It means that on the basis of one particular set of observations $y_1,...,y_n, \hat{\mu}$ might overestimate $\mu$, and on the basis of another set of observations, $\hat{\mu}$ might underestimate $\mu$. But if we could average a huge number of estimates of $\mu$ obtained from a huge number of sets of observations, then this average would exactly equal $\mu$.
+
+- But how far off will that single estimate of $\hat{\mu}$ be? So, it can be  the standard error of $\hat{\mu}$. $Var(\hat{\mu})=\dfrac{\sigma^2}{n}$ where $\sigma$ is the standard deviation of each of the realizations $y_i$ of Y. The more observations we have, the smaller the standard error of $\hat{\mu}$.
+
+- To know the accuracy of $\beta_0$ and $\beta_1$ we compute the standard errors associated with $\hat{\beta_0}$ and $\hat{\beta_1}$
+$$SE(\hat{\beta_0})^2={\sigma}^2[\dfrac{1}{n}+\dfrac{\bar{x}^2}{\sum\limits_{k=1}^n{(x_i-\bar{x})^2}}],   SE(\hat{\beta_1})^2=\dfrac{{\sigma}^2}{\sum\limits_{k=1}^n{(x_i-\bar{x})^2}}$$ 
+where  $\sigma^2$= Var($\epsilon$)(assume that errors for each observation have common variance $\sigma^2$ and are uncorrelated)
+
+- If $\sigma^2$ is unknown, estimate of $\sigma$ is given by $RSE=\sqrt{RSS/(n-2)}$ where $RSS=\sum\limits_{k=1}^n{(y_i-\hat{y})^2}$. The RSE is considered a measure of the lack of fit of the model.
+
+-Standard errors can be used to compute confidence intervals. A 95 % confidence interval confidence interval is defined as a range of values such that with 95% probability.For linear regression, the 95 % confidence interval for  approximately takes the form $\beta_1$ is $\hat{\beta_1} \pm 2\cdot SE(\hat{\beta_1})$
+
+- Standard errors can also be used to perform hypothesis tests on the coefficients. The most common hypothesis test involves testing the null hypothesis of 
+$$H_0 : \beta_1 = 0$$ vs.
+$$H_a : \beta_1 \neq 0$$
+In practice, we compute a t_statistics given by $t=\dfrac{\hat{\beta_1}-0}{SE(\hat{\beta_1})}$ which measures the number of standard deviations that $\hat{\beta_1}$ is away from 0.  If there really is no relationship between X and Y ,then we expect that will have a t-distribution with n − 2 degrees of freedom.
+
+- **p-value:** The probability of observing any number equal to |t| or larger in absolute value is p-value.We reject the null hypothesis—that is, we declare a relationship to exist between X and Y — if the p-value is small enough.
+
+- $R^2$ **Statistic**: The $R^2$ R2 measures the proportion of variability in Y that can be explained using X. It always takes on a value between 0 and 1 and is independent of the scale of Y.
+$$R^2 = \dfrac{TSS-RSS}{TSS} = 1- \dfrac{RSS}{TSS}$$
+where TSS = $\sum\limits_{k=1}^n{(y_i-\bar{y})^2}$ is the total sum of squares. TSS − RSS
+measures the amount of variability in the response that is explained (or removed) by performing the regression.
+
+$R^2$ = 1 means a large proportion of the variability in the response is explained by the regression.
+$R^2$ = 0 means the regression does not explain much of the variability in the response; this might occur because the linear model is wrong, or the error variance $\sigma^2$ is high or both.
+
+- Besides $R^2$, $r = Cor(X, Y )$ is also a measure of the linear relationship between X and Y. In the simple linear regression setting, $R^2 = r^2$
+
+
+### **Simple Codes to operate linear regression:**
+
+```{r}
+library(MASS)
+library(ISLR2)
+head(Boston)
+```
+```{r}
+lm.fit <- lm(Boston$medv ~ Boston$lstat) # to know the value of unknown coefficients
+lm.fit
+```
+```{r}
+# here we calculate the unknown coefficients manually 
+y <- Boston$medv - mean(Boston$medv)
+x <- Boston$lstat - mean(Boston$lstat)
+x_2 <- x^2
+num <- sum(y*x)
+den <- sum(x^2)
+slope <- num/den
+intercept <- mean(Boston$medv)-slope*mean(Boston$lstat)
+coefficients <- c(intercept,slope) # same output as lm function provides
+coefficients
+```
+```{r}
+#This gives us pvalues and standard errors for the coefficients, as well as the R2 statistic and F-statistic for the model
+summary(lm.fit)
+```
+```{r}
+names (lm.fit) # information are stored in lm.fit
+```
+
+```{r}
+confint (lm.fit) # confidence interval
+
+head(predict (lm.fit , data.frame(lstat = (c(5, 10, 15))), interval = "confidence")) # produce confidence intervals
+
+# predict (lm.fit , data.frame(lstat = (c(5, 10, 15))), interval = "prediction") # prediction intervals 
+```
+
+```{r}
+plot (Boston$lstat , Boston$medv , xlab = "lstat" , ylab = "medv")
+abline (lm.fit ) # a line with intercept and slope  
+# you can also use geom_abline() to plot abline in ggplot
+```
+
+```{r}
+plot ( predict (lm.fit), residuals (lm.fit)) # to compute the residuals from a linear regression
+plot ( predict(lm.fit), rstudent (lm.fit)) # studentized residuals
+plot ( predict(lm.fit), hatvalues (lm.fit)) # to compute Leverage statistics indicating non linearity
+
+```
+**Multiple Linear Regression:**
+
+In general, suppose that we have p distinct predictors. Then the multiple linear regression model takes the form $$Y = \beta_0+\beta_1 X_1+\cdots+\beta_p X_p+\epsilon$$
+where $X_j$ represents the jth predictor and $\beta_j$ (unknown) quantifies the association between that variable and the response.We can make predictions using the formula 
+$$\hat{y} = \hat{\beta}_0+\hat{\beta}_1 X_1+\cdots+\hat{\beta}_p X_p+\epsilon$$
+We choose $\beta_0, \beta_1,..., \beta_p$ to minimize the sum of squared residuals
+$$RSS = \sum\limits_{k=1}^n{(y_i-\hat{y})^2} = \sum\limits_{k=1}^n (y_i-\hat{\beta}_0-\hat{\beta}_1 X_{i1}-\cdots-\hat{\beta}_p X_{ip}) $$
+```{r}
+lm.fit <- lm(medv ~ lstat + age , data = Boston)
+# to get for all you can use lm(formula = medv ∼ .)
+summary (lm.fit)
+```
+
+### **NOTES:**
+
+- To know existence of a relationship between the response and predictors, we test the null hypothesis$$H_0 : \beta_1 = \beta_2 = \cdots = \beta_p= 0$$ vs.
+$$H_a :  \text{at least one}     \beta_j   \text{is non-zer}o$$
+- This hypothesis test is performed by computing the F-statistic 
+$$F = \dfrac{(TSS-RSS)/p}{RSS/(n-p-1)}$$
+- If the linear model assumptions are correct $E{(RSS/(n-p-1))} = \sigma^2$
+
+- If ${H_0}$ is true, $E{(TSS-RSS)/p} = \sigma^2$. Hence, when there is no relationship between the response and predictors, one would expect the F-statistic to take on a value close to 1.
+
+- If ${H_a}$ is true, $E{(TSS-RSS)/p} > \sigma^2$, so we expect $F$ to be greater than 1.
+
+- A larger F-statistic is needed to reject ${H_0}$ if n is small.
+
+- When ${H_0}$ is true and the errors $\epsilon_i$ have a normal distribution, the F-statistic follows an F-distribution.
+
+- Similarly, based on the p-value, we can determine whether or not to reject ${H_0}$.
+
+**Remark:**
+
+Sometimes we want to test that a particular subset of q of the coefficients are zero. Then the null hypothesis $$H_0 : \beta_{p-q+1} = \beta_{p-q+2} = \cdots = \beta_p= 0$$
+Then the appropriate F-statistic is$$F = \dfrac{(RSS_0-RSS)/p}{RSS/(n-p-1)}$$ where the residual sum of squares for the model is $RSS_0$
+
+**Deciding on Important Variables:**
+
+1. Forward selection: 
+
+We begin with the null model— a model that contains an intercept but no predictors. We then fit p simple linear regressions and add to the null model the variable that results in the lowest RSS. We then add to that model the variable that results in the lowest RSS for the new two-variable model. This approach is continued until some stopping rule is satisfied.
+
+2. Backward selection:
+
+We start with all variables in the model, and remove the variable with the largest p-value. The new (p − 1)-variable model is fit, and the variable with the largest p-value is removed. This procedure continues until a stopping rule is reached. For instance, we may stop when all remaining variables have a p-value below some threshold. Backward selection cannot be used if p>n.
+
+3. Mixed selection:
+
+This is a combination of forward and backward selection. We start with no variables in the model, and as with forward selection, we add the variable that provides the best fit. We continue to add variables one-by-one. Hence, if at any point the p-value for one of the variables in the model rises above a certain threshold, then we remove that variable from the model. We continue to perform these forward and backward steps until all variables in the model have a sufficiently low p-value, and all variables outside the model would have a large p-value if added to the model.
+
+
+### **Regression Model for Qualitative Predictors:**
+
+- If a qualitative predictor (also known as a factor) factor only has two levels, We simply create an indicator or dummy variable dummy variable that takes on two possible numerical values($0/1$ or $-1/1$).
+$$y_i=\beta_0+\beta_1 x_i+\epsilon_i= \begin{cases}\beta_0+\beta_1+\epsilon_i & \text { if } i \text { th element belongs to a particular category } \\ \beta_0+\epsilon_i & \text { if } i \text { th element does not }\end{cases}$$
+
+- When a qualitative predictor has more than two levels, we can create additional dummy variables.The model looks like
+$$y_i=\beta_0+\beta_1 x_{i 1}+\beta_2 x_{i 2}+\epsilon_i= \begin{cases}\beta_0+\beta_1+\epsilon_i & \text { if } i \text { th element belongs to 1st category } \\ \beta_0+\beta_2+\epsilon_i & \text { if } i \text { th element belongs to 2nd category } \\ \beta_0+\epsilon_i & \text { if } i \text { th element belongs to 3rd category }\end{cases}$$
+- Consider the standard linear regression model with two variables, $Y=\beta_0+\beta_1 X_1+\beta_2 X_2+\epsilon$. This model includes a third predictor, called an interaction term, which is constructed by computing the product of $X_1$ and $X_2$. The resulting model will be -
+
+$$
+\begin{aligned} 
+&Y=\beta_0+\beta_1 X_1+\beta_2 X_2+\beta_3 X_1 X_2+\epsilon \\
+& =\beta_0+\left(\beta_1+\beta_3 X_2\right) X_1+\beta_2 X_2+\epsilon \\
+& =\beta_0+\tilde{\beta}_1 X_1+\beta_2 X_2+\epsilon
+\end{aligned}
+$$
+
+- In some cases, the true relationship between the response and the predictors may be nonlinear and to accommodate non-linear relationships, we are using polynomial regression taking $X^p$ instead of x as we require.
+```{r}
+lm.fit <- lm(Sales ~ . + Income:Advertising + Price:Age , data = Carseats)
+summary (lm.fit)
+attach (Carseats)
+contrasts (ShelveLoc) # returns the coding that R uses for the dummy variables
+```
+
+```{r}
+summary (lm(medv ~ lstat * age , data = Boston))
+```
+
+### **Potential Problems:**
+
+1. **Non-linearity of the Data**-
+
+Residual plots are a useful graphical tool for identifying non-linearity. For a simple linear regression model, we can plot the residuals, $e_i = y_i − \hat{y_i}$, versus {x_i}. In the case of a multiple regression model, since there are multiple predictors, we instead plot the residuals versus
+{y_i}. The presence of a pattern in the residual plot may indicate a problem with some aspect of the linear model.
+
+
+2. **Correlation of Error Terms**-
+
+The errors are uncorrelated means that $\epsilon_i$ is positive and provides little or no information about the sign of $\epsilon_{i+1}$. In the context of**time series data**, observations that are obtained at adjacent time points will have positively correlated errors. Consequently
+adjacent residuals may have tracking similar values.
+
+
+3. **Heteroscedasticity**-
+
+It is often the case that the variances of the error terms are non-constant. For instance, the variances of the error terms may increase with the value of the response. One possible solution is to transform the response using a concave function leading to a reduction in heteroscedasticity. 
+
+Also, we can fit our model by weighted least squares, with weights proportional to the inverse variances when each of these raw variance of each response is uncorrelated with variance $σ^2$.
+
+4. **Outliers**-
+
+An outlier is a point for which yi is far from the value predicted by the outlier model. Outliers can arise for a variety of reasons, such as incorrect recording of an observation during data collection. Residual plots can be used to identify outliers.
+
+5. **High Leverage Points**-
+
+In contrast, observations with high leverage have an unusual value for $x_i$, the predictor value for this observation is large relative to the other observations.In order to quantify an observation’s leverage, we compute the leverage statistic. A large value of this statistic indicates an observation with high leverage statistic leverage. For a simple linear regression,
+$$h_i=\frac{1}{n}+\frac{\left(x_i-\bar{x}\right)^2}{\sum_{i^{\prime}=1}^n\left(x_{i^{\prime}}-\bar{x}\right)^2} $$
+
+The leverage statistic $h_i$ is always between 1/n and 1, and the average leverage for all the observations is always equal to (p + 1)/n. So if a given observation has a leverage statistic
+that greatly exceeds (p+1)/n, then we may suspect that the corresponding point has high leverage.
+
+6. **Collinearity**-
+
+- Collinearity refers to the situation in which two or more predictor variables are closely related to one another. A simple way to detect collinearity is to look at the correlation matrix of the predictors.
+
+- Unfortunately, not all collinearity problems can be detected by inspection of the correlation matrix: it is possible for collinearity to exist between three or more variables even if no pair of variables has a particularly high correlation. We call this situation multicollinearity.
+
+- A better way to assess multicollinearity is to compute the variance inflation factor (VIF). The smallest possible value for VIF is 1, which indicates the complete absence of collinearity.
+$$\operatorname{VIF}\left(\hat{\beta}_j\right)=\frac{1}{1-R_{X_j \mid X_{-j}}^2}$$
+where $R_{X_j \mid X_{-j}}^2$ is the R2 from a regression of $X_j$ onto all of the other
+predictors. If $R_{X_j \mid X_{-j}}^2$ is close to one, then collinearity is present, and so the VIF will be large.
+
+```{r}
+lm.fit2 <- lm(medv ~ lstat + I(lstat^2) , data = Boston) # for non linearity
+summary (lm.fit2)
+anova (lm.fit , lm.fit2) # quantify the extent to which the quadratic fit is superior to the linear fit
+```
+
+```{r}
+lm.fit5 <- lm(Boston$medv ~ poly (Boston$lstat , 5)) # to create the polynomial within lm()
+summary (lm.fit5)
+```
+
+
