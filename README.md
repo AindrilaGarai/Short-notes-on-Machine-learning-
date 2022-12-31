@@ -6,7 +6,7 @@ References of the books:
 References :
 
 1. James, G., Witten, D., Hastie, T., & Tibshirani, R. (2013). An introduction to statistical learning (Vol. 112, p. 18). New York: springer. 
-Link: https://www.statlearning.com/
+Link: [ISLR BOOK](https://www.statlearning.com/)
 
 2. Hastie, T., Tibshirani, R., Friedman, J. H., & Friedman, J. H. (2009). The elements of statistical learning: data mining, inference, and prediction (Vol. 2, pp. 1-758). New York: springer. 
-Link: [ESLR](https://hastie.su.domains/ElemStatLearn/) 
+Link: [ESLR BOOK](https://hastie.su.domains/ElemStatLearn/) 
