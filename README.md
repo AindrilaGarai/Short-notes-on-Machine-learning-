@@ -1,4 +1,4 @@
-  This repository contains the learning notes that I have prepared during a Winter Reading Project on Statistical Machine Learning done under the guidance of Dr. Tanujit Chakraborty at Sorbonne Universitè (remote internship).
+  This repository contains the learning notes that I have prepared during a Winter Reading Project on Statistical Machine Learning done under the guidance of [Dr. Tanujit Chakraborty](https://www.ctanujit.org/) at Sorbonne Universitè (remote internship).
 
   Each and every folder contains the reading notes and codes of the topics that I have learned from ISLR Book [1] and ESLR Book [2] during this reading project.
 References of the books:
